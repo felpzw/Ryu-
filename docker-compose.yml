@@ -1,0 +1,23 @@
+services:
+  mininet:
+    build:
+      context: ./
+      dockerfile: mininet.dockerfile
+    network_mode: "bridge"
+    environment: []
+    privileged: true
+    tty: true
+    stdin_open: true
+    container_name: sdn_mininet 
+  ryu:
+    build:
+      context: ./
+      dockerfile: ryu.dockerfile
+    command: "ryu-manager ryu.app.simple_switch"
+    ports:
+      - 6633:6633
+    network_mode: "bridge"
+    volumes: []
+    environment: []
+    tty: true
+    container_name: sdn_ryu
