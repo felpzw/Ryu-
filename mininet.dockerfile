@@ -1,9 +1,6 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 USER root
-WORKDIR /root
-
-COPY mininet-entrypoint.sh /
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
@@ -20,9 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     x11-xserver-utils \
     xterm \
+    wget \
  && rm -rf /var/lib/apt/lists/* \
- && touch /etc/network/interfaces \
- && chmod +x /mininet-entrypoint.sh
+ && touch /etc/network/interfaces
+
+WORKDIR /code
+COPY mininet_topology.py /code/
+COPY mininet-entrypoint.sh /
+RUN chmod +x /mininet-entrypoint.sh
+RUN ln /usr/bin/ovs-testcontroller /usr/bin/controller
 
 EXPOSE 6633 6653 6640
 

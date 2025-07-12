@@ -3,21 +3,41 @@ services:
     build:
       context: ./
       dockerfile: mininet.dockerfile
-    network_mode: "bridge"
     environment: []
     privileged: true
+    command: "/code/mininet_topology_v2.py --nat"
     tty: true
     stdin_open: true
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
     container_name: sdn_mininet 
+    networks:
+      - sdn
+    volumes: 
+      - /lib/modules:/lib/modules
   ryu:
     build:
       context: ./
       dockerfile: ryu.dockerfile
-    command: "ryu-manager ryu.app.simple_switch"
+    command: "load_balancer_v2.py --ofp-listen-host 0.0.0.0"
+    # command: "ryu-manager ryu.app.simple_switch"
     ports:
       - 6633:6633
-    network_mode: "bridge"
-    volumes: []
+      - 6653:6653
+      - 6640:6640
+    volumes: 
+      - ./:/code
     environment: []
+    networks:
+      - sdn
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
     tty: true
+    privileged: true
     container_name: sdn_ryu
+
+networks:
+  sdn:
+    external: true
